@@ -1,7 +1,11 @@
-const { app, BrowserWindow, Menu, Tray, shell, nativeImage } = require("electron");
+const { app, BrowserWindow, Menu, Tray, shell, nativeImage, session } = require("electron");
 const path = require("path");
 
 const MESSAGES_URL = "https://messages.google.com/web";
+const APP_ID = "com.googlemessages.desktop";
+
+app.setAppUserModelId(APP_ID);
+
 const gotTheLock = app.requestSingleInstanceLock();
 
 if (!gotTheLock) {
@@ -34,11 +38,31 @@ if (!gotTheLock) {
       },
     });
 
+    session.defaultSession.setPermissionRequestHandler((webContents, permission, callback) => {
+      const allowed = ["notifications", "media", "mediaKeySystem", "clipboard-read", "clipboard-sanitized-write"];
+      callback(allowed.includes(permission));
+    });
+
+    session.defaultSession.setPermissionCheckHandler((webContents, permission) => {
+      const allowed = ["notifications", "media", "mediaKeySystem", "clipboard-read", "clipboard-sanitized-write"];
+      return allowed.includes(permission);
+    });
+
     mainWindow.loadURL(MESSAGES_URL);
 
     mainWindow.webContents.setWindowOpenHandler(({ url }) => {
       shell.openExternal(url);
       return { action: "deny" };
+    });
+
+    mainWindow.webContents.on("page-title-updated", (event, title) => {
+      if (mainWindow && !mainWindow.isFocused() && title !== mainWindow.getTitle()) {
+        mainWindow.flashFrame(true);
+      }
+    });
+
+    mainWindow.on("focus", () => {
+      mainWindow.flashFrame(false);
     });
 
     if (enableTray && (isWindows || !isMac)) {
