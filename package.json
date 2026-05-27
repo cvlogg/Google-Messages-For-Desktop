@@ -1,37 +1,75 @@
 {
   "name": "google-messages-for-desktop",
-  "version": "1.4.2",
-  "description": "A \"native-like\" desktop app for Google Messages. ",
-  "main": "index.js",
+  "version": "2.0.0",
+  "description": "A \"native-like\" desktop app for Google Messages.",
+  "main": "main.js",
   "scripts": {
-    "mac": "npx nativefier --conceal --platform \"mac\" --icon google-messages-logo.png --name \"Google Messages\" \"https://messages.google.com/web\" --honest --disable-dev-tools --single-instance dist/Mac",
-    "windows": "npx nativefier --platform \"windows\" --icon google-messages-logo.png --name \"Google Messages\" \"https://messages.google.com/web\" --honest --disable-dev-tools --single-instance dist/Windows",
-    "windows:tray": "npx nativefier --platform \"windows\" --icon google-messages-logo.png --name \"Google Messages\" \"https://messages.google.com/web\" --honest --disable-dev-tools --single-instance --tray dist/Windows_Tray",
-    "linux": "npx nativefier --platform \"linux\" --icon google-messages-logo.png --name \"Google Messages\" \"https://messages.google.com/web\" --honest --disable-dev-tools --single-instance dist/Linux",
-    "package:mac": "cd dist/Mac; zip -r ../google-messages-mac_v$(npm -s run env echo '$npm_package_version').zip *",
-    "package:linux": "cd dist/Linux; zip -r ../google-messages-linux_v$(npm -s run env echo '$npm_package_version').zip *",
-    "package:windows": "cd dist/Windows; zip -r ../google-messages-windows_v$(npm -s run env echo '$npm_package_version').zip *",
-    "package:windows_tray": "cd dist/Windows_Tray; zip -r ../google-messages-windows-tray_v$(npm -s run env echo '$npm_package_version').zip *",
-    "clean:dist": "rm -rf dist",
-    "clean:packages": "rm -rf Windows/*.zip Mac/*.zip Linux/*.zip",
-    "build:all": "npm run clean:dist && npm run mac && npm run windows && npm run windows:tray && npm run linux",
-    "package:all": "npm run clean:packages && npm run package:mac && npm run package:linux && npm run package:windows && npm run package:windows_tray",
-    "release": "npm run build:all && npm run package:all"
+    "start": "electron .",
+    "start:tray": "electron . --tray",
+    "build:mac": "electron-builder --mac",
+    "build:windows": "electron-builder --win",
+    "build:windows:tray": "electron-builder --win -c.extraMetadata.tray=true",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder --mac --win --linux",
+    "clean:dist": "rm -rf dist"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/kelyvin/Google-Messages-For-Desktop.git"
+    "url": "git+https://github.com/cvlogg/Google-Messages-For-Desktop.git"
   },
   "engines": {
-    "node": ">=12.0.0"
+    "node": ">=18.0.0"
   },
   "author": "Kelvin Nguyen",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/kelyvin/Google-Messages-For-Desktop/issues"
+    "url": "https://github.com/cvlogg/Google-Messages-For-Desktop/issues"
   },
-  "homepage": "https://github.com/kelyvin/Google-Messages-For-Desktop#readme",
-  "dependencies": {
-    "nativefier": "^49.0.1"
+  "homepage": "https://github.com/cvlogg/Google-Messages-For-Desktop#readme",
+  "devDependencies": {
+    "electron": "^42.3.0",
+    "electron-builder": "^26.8.1"
+  },
+  "build": {
+    "appId": "com.googlemessages.desktop",
+    "productName": "Google Messages",
+    "files": [
+      "main.js",
+      "preload.js"
+    ],
+    "extraResources": [
+      {
+        "from": "icons/icon.png",
+        "to": "icon.png"
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.social-networking",
+      "icon": "icons/icon.png",
+      "target": [
+        "dmg",
+        "zip"
+      ]
+    },
+    "win": {
+      "icon": "icons/icon.png",
+      "target": [
+        "nsis",
+        "zip"
+      ]
+    },
+    "linux": {
+      "icon": "icons/icon.png",
+      "category": "Network;InstantMessaging",
+      "target": [
+        "AppImage",
+        "deb",
+        "zip"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   }
 }
