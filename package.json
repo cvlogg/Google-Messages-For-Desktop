@@ -8,7 +8,6 @@
     "start:tray": "electron . --tray",
     "build:mac": "electron-builder --mac",
     "build:windows": "electron-builder --win",
-    "build:windows:tray": "electron-builder --win -c.extraMetadata.tray=true",
     "build:linux": "electron-builder --linux",
     "build:all": "electron-builder --mac --win --linux",
     "clean:dist": "rm -rf dist"
@@ -41,6 +40,10 @@
       {
         "from": "icons/icon.png",
         "to": "icon.png"
+      },
+      {
+        "from": "icons/icon.ico",
+        "to": "icon.ico"
       }
     ],
     "mac": {

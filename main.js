@@ -15,13 +15,14 @@ if (!gotTheLock) {
   let tray = null;
   const isMac = process.platform === "darwin";
   const isWindows = process.platform === "win32";
-  const enableTray = process.argv.includes("--tray");
+  const enableTray = isWindows || process.argv.includes("--tray");
 
   function getIconPath() {
+    const ext = isWindows ? "ico" : "png";
     if (app.isPackaged) {
-      return path.join(process.resourcesPath, "icon.png");
+      return path.join(process.resourcesPath, `icon.${ext}`);
     }
-    return path.join(__dirname, "icons", "icon.png");
+    return path.join(__dirname, "icons", `icon.${ext}`);
   }
 
   function createWindow() {
