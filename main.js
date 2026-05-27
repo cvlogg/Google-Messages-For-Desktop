@@ -1,4 +1,4 @@
-const { app, BrowserWindow, Menu, Tray, shell, nativeImage, session } = require("electron");
+const { app, BrowserWindow, Menu, Tray, shell, nativeImage, session, ipcMain, Notification } = require("electron");
 const path = require("path");
 
 const MESSAGES_URL = "https://messages.google.com/web";
@@ -33,7 +33,7 @@ if (!gotTheLock) {
       autoHideMenuBar: true,
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
-        contextIsolation: true,
+        contextIsolation: false,
         nodeIntegration: false,
       },
     });
@@ -46,6 +46,21 @@ if (!gotTheLock) {
     session.defaultSession.setPermissionCheckHandler((webContents, permission) => {
       const allowed = ["notifications", "media", "mediaKeySystem", "clipboard-read", "clipboard-sanitized-write"];
       return allowed.includes(permission);
+    });
+
+    ipcMain.on("show-notification", (event, data) => {
+      const notif = new Notification({
+        title: data.title,
+        body: data.body,
+        icon: getIconPath(),
+      });
+      notif.on("click", () => {
+        if (mainWindow) {
+          mainWindow.show();
+          mainWindow.focus();
+        }
+      });
+      notif.show();
     });
 
     mainWindow.loadURL(MESSAGES_URL);
