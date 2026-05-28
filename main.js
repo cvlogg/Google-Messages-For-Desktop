@@ -31,8 +31,6 @@ if (!gotTheLock) {
       height: 800,
       icon: getIconPath(),
       title: "Google Messages",
-      frame: false,
-      backgroundColor: "#ECE9D8",
       autoHideMenuBar: true,
       webPreferences: {
         preload: path.join(__dirname, "preload.js"),
@@ -50,14 +48,6 @@ if (!gotTheLock) {
       const allowed = ["notifications", "media", "mediaKeySystem", "clipboard-read", "clipboard-sanitized-write"];
       return allowed.includes(permission);
     });
-
-    ipcMain.on("window-minimize", () => mainWindow && mainWindow.minimize());
-    ipcMain.on("window-maximize", () => {
-      if (!mainWindow) return;
-      if (mainWindow.isMaximized()) mainWindow.unmaximize();
-      else mainWindow.maximize();
-    });
-    ipcMain.on("window-close", () => mainWindow && mainWindow.close());
 
     ipcMain.on("show-notification", (event, data) => {
       const notif = new Notification({
